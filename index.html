@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download SEIJI Script</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0f172a; 
+            background-image: radial-gradient(circle at top right, #1e1b4b 0%, transparent 40%), radial-gradient(circle at bottom left, #0f172a 0%, transparent 40%); 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .glass-panel { 
+            background: rgba(30, 41, 59, 0.4); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); 
+        }
+        .glow-text { text-shadow: 0 0 10px rgba(249, 115, 22, 0.4); }
+        .progress-bar { transition: width 0.1s linear; }
+    </style>
+</head>
+<body class="text-slate-200 p-6 antialiased">
+    
+    <div class="glass-panel w-full max-w-lg rounded-3xl p-8 relative overflow-hidden text-center">
+        <!-- Decorative gradients -->
+        <div class="absolute -top-10 -right-10 w-32 h-32 bg-orange-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        
+        <!-- Header -->
+        <div class="flex flex-col items-center justify-center mb-6 relative z-10">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg shadow-orange-500/30 mb-4">
+                S
+            </div>
+            <h1 class="text-3xl font-bold text-white glow-text tracking-tight">SEIJI SCRIPT</h1>
+            <p class="text-xs text-slate-400 font-medium tracking-widest uppercase mt-1">Premium MLBB Mod Menu</p>
+        </div>
+
+        <!-- Features List -->
+        <div class="text-left bg-slate-800/40 rounded-2xl p-5 mb-8 border border-slate-700/50 relative z-10">
+            <p class="text-sm font-semibold text-orange-400 mb-3">Included Features:</p>
+            <ul class="space-y-2 text-sm text-slate-300">
+                <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Anti-Cheat Bypass (ACE / Lobby)</li>
+                <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Drone View (1x, 4x, 6x, 8x)</li>
+                <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Maphack No Icon</li>
+                <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Pointer Stats (Kill, Gold, Exp)</li>
+                <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Premium UI & YunLua Lock Support</li>
+            </ul>
+        </div>
+
+        <!-- Download Section -->
+        <div class="relative z-10">
+            <button id="downloadBtn" onclick="startDownload()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-orange-500/30 flex justify-center items-center gap-2">
+                <svg id="iconDownload" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                <span id="btnText">Download Script (.lua)</span>
+            </button>
+
+            <!-- Progress Bar Container -->
+            <div id="progressContainer" class="hidden mt-6 text-left">
+                <div class="flex justify-between text-xs font-medium mb-2">
+                    <span class="text-orange-400" id="progressText">Connecting to server...</span>
+                    <span class="text-slate-400" id="progressPercent">0%</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-3 overflow-hidden border border-slate-600">
+                    <div id="progressBar" class="progress-bar bg-gradient-to-r from-orange-500 to-orange-400 h-3 rounded-full w-0 shadow-[0_0_10px_rgba(249,115,22,0.5)]"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Instructions -->
+        <div class="mt-8 text-xs text-slate-500 relative z-10">
+            <p>Requires Game Guardian or ELGG.</p>
+            <p class="mt-1">© Seiji Dev. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        async function startDownload() {
+            const btn = document.getElementById('downloadBtn');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const progressPercent = document.getElementById('progressPercent');
+            const icon = document.getElementById('iconDownload');
+            const btnText = document.getElementById('btnText');
+
+            // Reset UI
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            progressContainer.classList.remove('hidden');
+            icon.classList.add('animate-spin');
+            btnText.innerText = "Downloading...";
+            
+            try {
+                // Kunin ang Lua file mula sa parehong folder
+                const response = await fetch('seiji_script.lua');
+                
+                if (!response.ok) throw new Error("File not found");
+
+                // Dahil maliit lang ang file, mag-simulate tayo ng smooth progress
+                let progress = 0;
+                progressText.innerText = "Downloading script...";
+                
+                const interval = setInterval(() => {
+                    progress += Math.floor(Math.random() * 15) + 5;
+                    if (progress > 100) progress = 100;
+
+                    progressBar.style.width = `${progress}%`;
+                    progressPercent.innerText = `${progress}%`;
+
+                    if (progress === 100) {
+                        clearInterval(interval);
+                        finalizeDownload(response);
+                    }
+                }, 100);
+
+            } catch (error) {
+                progressText.innerText = "Download Failed!";
+                progressText.classList.replace('text-orange-400', 'text-red-500');
+                progressBar.classList.replace('from-orange-500', 'from-red-500');
+                icon.classList.remove('animate-spin');
+                btnText.innerText = "Retry Download";
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        async function finalizeDownload(response) {
+            const icon = document.getElementById('iconDownload');
+            const btnText = document.getElementById('btnText');
+            const progressText = document.getElementById('progressText');
+            const progressBar = document.getElementById('progressBar');
+            const btn = document.getElementById('downloadBtn');
+
+            // Gawing Blob yung file para ma-trigger yung download
+            const blob = await response.blob();
+            
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'seiji_script.lua';
+            document.body.appendChild(a);
+            a.click();
+            
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            // Success UI
+            icon.classList.remove('animate-spin');
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+            btnText.innerText = "Download Complete!";
+            progressText.innerText = "Successfully downloaded!";
+            progressText.classList.replace('text-orange-400', 'text-emerald-400');
+            progressBar.classList.replace('to-orange-400', 'to-emerald-400');
+            btn.classList.replace('bg-orange-600', 'bg-emerald-600');
+
+            // I-reset pagkatapos ng 4 na segundo
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                document.getElementById('progressContainer').classList.add('hidden');
+                progressBar.style.width = '0%';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>';
+                btnText.innerText = "Download Script (.lua)";
+                btn.classList.replace('bg-emerald-600', 'bg-orange-600');
+                progressText.classList.replace('text-emerald-400', 'text-orange-400');
+                progressBar.classList.replace('to-emerald-400', 'to-orange-400');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
